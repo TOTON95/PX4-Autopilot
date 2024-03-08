@@ -48,7 +48,6 @@ else()
 		i2c.cpp
 		init.c
 		led.c
-		rcc.c
 		spi.cpp
 		timer_config.cpp
 		usb.c
@@ -56,6 +55,7 @@ else()
 
 	target_link_libraries(drivers_board
 		PRIVATE
+			arch_io_pins
 			arch_spi
 			drivers__led
 			nuttx_arch

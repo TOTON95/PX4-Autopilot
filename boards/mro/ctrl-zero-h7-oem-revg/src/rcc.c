@@ -91,24 +91,6 @@
 #	endif
 #endif
 
-/* PLL are only enabled if the P,Q or R outputs are enabled. */
-
-// #undef USE_PLL1
-// #if STM32_PLLCFG_PLL1CFG & (RCC_PLLCFGR_DIVP1EN | RCC_PLLCFGR_DIVQ1EN | RCC_PLLCFGR_DIVR1EN)
-// #	define USE_PLL1
-// #endif
-
-// #undef USE_PLL2
-// #if STM32_PLLCFG_PLL2CFG & (RCC_PLLCFGR_DIVP2EN | RCC_PLLCFGR_DIVQ2EN | RCC_PLLCFGR_DIVR2EN)
-// #	define USE_PLL2
-// #endif
-
-// #undef USE_PLL3
-// #if STM32_PLLCFG_PLL3CFG & (RCC_PLLCFGR_DIVP3EN | RCC_PLLCFGR_DIVQ3EN | RCC_PLLCFGR_DIVR3EN)
-// #	define USE_PLL3
-// #endif
-
-
 /************************************************************************************
  * Private Functions
  ************************************************************************************/
@@ -125,36 +107,11 @@ __EXPORT void stm32_board_clockconfig(void)
 	volatile uint32_t regval = 0;
 	volatile int32_t timeout;
 
-#ifdef STM32_BOARD_USEHSI
-	/* Enable Internal High-Speed Clock (HSI) */
-
-	regval	= getreg32(STM32_RCC_CR);
-	regval |= RCC_CR_HSION;					 /* Enable HSI */
-	putreg32(regval, STM32_RCC_CR);
-
-	/* Wait until the HSI is ready (or until a timeout elapsed) */
-
-	for (timeout = HSIRDY_TIMEOUT; timeout > 0; timeout--) {
-		/* Check if the HSIRDY flag is the set in the CR */
-
-		if ((getreg32(STM32_RCC_CR) & RCC_CR_HSIRDY) != 0) {
-			/* If so, then break-out with timeout > 0 */
-
-			break;
-		}
-	}
-
-#else /* if STM32_BOARD_USEHSE */
 	/* Enable External High-Speed Clock (HSE) */
 
 	regval	= getreg32(STM32_RCC_CR);
-// #ifdef STM32_HSEBYP_ENABLE					/* May be defined in board.h header file */
-// 	regval |= RCC_CR_HSEBYP;					/* Enable HSE clock bypass */
-// #else
-// 	regval &= ~RCC_CR_HSEBYP;				 /* Disable HSE clock bypass */
-// #endif
 	regval |= RCC_CR_HSEBYP; // Needed for TCXO
-	regval |= RCC_CR_HSEON;					 /* Enable HSE */
+	regval |= RCC_CR_HSEON;	 /* Enable HSE */
 	putreg32(regval, STM32_RCC_CR);
 
 	/* Wait until the HSE is ready (or until a timeout elapsed) */
@@ -169,21 +126,6 @@ __EXPORT void stm32_board_clockconfig(void)
 		}
 	}
 
-#endif
-
-#ifdef CONFIG_STM32H7_HSI48
-	/* Enable HSI48 */
-
-	regval	= getreg32(STM32_RCC_CR);
-	regval |= RCC_CR_HSI48ON;
-	putreg32(regval, STM32_RCC_CR);
-
-	/* Wait until the HSI48 is ready */
-
-	while ((getreg32(STM32_RCC_CR) & RCC_CR_HSI48RDY) == 0) {
-	}
-
-#endif
 
 	/* Check for a timeout.	If this timeout occurs, then we are hosed.	We
 	 * have no real back-up plan, although the following logic makes it look
@@ -341,7 +283,6 @@ __EXPORT void stm32_board_clockconfig(void)
 		 */
 
 		regval = getreg32(STM32_PWR_CR3);
-		// regval |= STM32_PWR_CR3_LDOEN | STM32_PWR_CR3_LDOESCUEN;
 		regval &= ~STM32_PWR_CR3_LDOEN; // disable LDO
 		regval |= STM32_PWR_CR3_BYPASS | STM32_PWR_CR3_LDOESCUEN;
 		putreg32(regval, STM32_PWR_CR3);
