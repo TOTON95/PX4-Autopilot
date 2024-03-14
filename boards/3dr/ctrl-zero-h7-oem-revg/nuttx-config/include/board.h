@@ -271,6 +271,7 @@
 #define GPIO_SPI5_MOSI   GPIO_SPI5_MOSI_2               /* PF9  */
 
 
+
 /* I2C */
 #define GPIO_I2C1_SCL GPIO_I2C1_SCL_2       /* PB8  */
 #define GPIO_I2C1_SDA GPIO_I2C1_SDA_2       /* PB9  */
