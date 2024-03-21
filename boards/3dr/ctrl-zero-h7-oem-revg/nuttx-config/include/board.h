@@ -62,7 +62,7 @@
 #define STM32_HSE_FREQUENCY     STM32_BOARD_XTAL
 #define STM32_LSE_FREQUENCY     0
 
-#define STM32_HSEBYP_ENABLE	1
+//#define STM32_HSEBYP_ENABLE	1
 
 /* Main PLL Configuration.
  *
